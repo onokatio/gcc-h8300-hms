@@ -16,9 +16,20 @@ depends=('binutils-h8300-hms')
 privedes=('gcc-h8300-hms')
 makedepends=()
 install=
-source=("gcc-h8300-hms.deb::http://ftp.jp.debian.org/debian/pool/main/g/gcc-h8300-hms/gcc-h8300-hms_3.4.6+dfsg2-4_amd64.deb")
-md5sums=("f48cc0ee64b75fb4f0adbb98e9db23a3")
+source=("http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-$pkgver/gcc-$pkgver.tar.gz")
+md5sums=("ca4c4f28adbe0a657a3caa5c2bc45156")
 
+build() {
+	cd $srcdir
+	./configure \
+		--target=h8300-hms \
+		--with-newlib \
+		--enable-languages=c,c++ \
+		--disable-libssp \
+		--enable-obsolete \
+		--prefix=/usr
+	make
+}
 package() {
 	bsdtar -xf data.tar.xz -C "$pkgdir/"
 }
