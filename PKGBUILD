@@ -16,20 +16,33 @@ depends=('binutils-h8300-hms')
 privedes=('gcc-h8300-hms')
 makedepends=()
 install=
-source=("http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-$pkgver/gcc-$pkgver.tar.gz")
-md5sums=("ca4c4f28adbe0a657a3caa5c2bc45156")
+source=("http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-$pkgver/gcc-$pkgver.tar.gz"
+ "https://sourceware.org/pub/newlib/newlib-1.19.0.tar.gz")
+md5sums=(SKIP SKIP)
 
+prepare() {
+	mkdir $srcdir/../build
+}
 build() {
-	cd $srcdir
+	#cd $srcdir/../build
+	#$srcdir/gcc-$pkgver/configure \
+	cd $srcdir/gcc-$pkgver
+	ln -s $srcdir/newlib-1.19.0/newlib .
 	./configure \
 		--target=h8300-hms \
 		--with-newlib \
-		--enable-languages=c,c++ \
+		--without-headers \
+		--enable-languages=c \
 		--disable-libssp \
-		--enable-obsolete \
+		--disable-nls \
+		--disable-libstdc__-v3 \
+		--disable-shared \
+		--disable-libada \
+		--disable-werror \
 		--prefix=/usr
-	make
+	make all-gcc
 }
 package() {
-	bsdtar -xf data.tar.xz -C "$pkgdir/"
+	cd $srcdir/build
+	make DESTDIR="$pkgdir" install
 }
